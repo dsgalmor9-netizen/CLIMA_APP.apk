@@ -1,0 +1,240 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated user profile and synchronized prepaid active-time balance for the TQ-Q-SY1-JWT switch.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID matching the document ID."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "description": "User email address (PII restricted strictly to owner)."
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "User display name."
+        },
+        "remainingSeconds": {
+          "type": "number",
+          "description": "Latest synchronized remaining prepaid active seconds (starts at 0)."
+        },
+        "activeUntilMs": {
+          "type": "number",
+          "description": "Epoch milliseconds timestamp when active time expires (0 if inactive)."
+        },
+        "autoOffAtMs": {
+          "type": "number",
+          "description": "Epoch milliseconds timestamp for auto-off window (0 if inactive)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last update timestamp."
+        }
+      },
+      "required": [
+        "uid",
+        "email",
+        "displayName",
+        "remainingSeconds",
+        "activeUntilMs",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "PaymentRecord": {
+      "title": "PaymentRecord",
+      "description": "Server-verified real Wompi payment record in COP for prepaid air-conditioning control hours.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Document ID matching the Wompi purchase reference."
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Owner Firebase Auth UID."
+        },
+        "reference": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique Wompi payment reference."
+        },
+        "transactionId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Official Wompi transaction identifier."
+        },
+        "hours": {
+          "type": "number",
+          "description": "Number of purchased hours (1 to 24)."
+        },
+        "addedSeconds": {
+          "type": "number",
+          "description": "Seconds credited (hours * 3600)."
+        },
+        "subtotalCop": {
+          "type": "number",
+          "description": "Subtotal in COP before progressive discount (hours * 5000)."
+        },
+        "discountPercent": {
+          "type": "number",
+          "description": "Applied progressive discount percentage (0, 10, 20, or 30)."
+        },
+        "discountCop": {
+          "type": "number",
+          "description": "Discount savings in COP."
+        },
+        "totalCop": {
+          "type": "number",
+          "description": "Final total paid via Wompi in COP."
+        },
+        "amountInCents": {
+          "type": "number",
+          "description": "Final total in cents (totalCop * 100)."
+        },
+        "currency": {
+          "type": "string",
+          "enum": ["COP"],
+          "maxLength": 8,
+          "description": "Currency code (COP)."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["APPROVED", "DECLINED", "VOIDED", "ERROR"],
+          "maxLength": 24,
+          "description": "Verified Wompi payment status (APPROVED)."
+        },
+        "isDemo": {
+          "type": "boolean",
+          "description": "Always false for verified production Wompi payments."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "reference",
+        "transactionId",
+        "hours",
+        "addedSeconds",
+        "subtotalCop",
+        "discountPercent",
+        "discountCop",
+        "totalCop",
+        "amountInCents",
+        "currency",
+        "status",
+        "isDemo",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CommandLog": {
+      "title": "CommandLog",
+      "description": "Immutable log of Tuya switch commands, status checks, and verified Wompi payments executed by the user.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Command log document ID."
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Owner Firebase Auth UID."
+        },
+        "action": {
+          "type": "string",
+          "enum": ["PRENDER", "APAGAR", "ESTADO", "PAGO"],
+          "maxLength": 24,
+          "description": "Action type performed."
+        },
+        "ok": {
+          "type": "boolean",
+          "description": "Whether the action succeeded."
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Human-readable response summary from Tuya Cloud or verified Wompi ledger."
+        },
+        "tuyaCode": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Optional error or status code."
+        },
+        "tuyaTid": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Optional Tuya trace ID or Wompi transaction reference."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "action",
+        "ok",
+        "summary",
+        "tuyaCode",
+        "tuyaTid",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Private user profile and active time balance, readable and writable only by the owner."
+    },
+    "/users/{userId}/payments/{paymentId}": {
+      "schema": {
+        "$ref": "#/entities/PaymentRecord"
+      },
+      "description": "Immutable per-user verified Wompi payment records."
+    },
+    "/users/{userId}/commands/{commandId}": {
+      "schema": {
+        "$ref": "#/entities/CommandLog"
+      },
+      "description": "Append-only per-user history of Tuya Cloud commands and status checks."
+    }
+  }
+}

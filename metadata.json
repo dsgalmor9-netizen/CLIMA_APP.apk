@@ -1,0 +1,8 @@
+{
+  "name": "Remix Control Remoto TQ-Q-SY1-JWT PRUEBAS",
+  "description": "Panel Smart Home en la nube para controlar y monitorear el interruptor inteligente Wi-Fi Carril DIN TQ-Q-SY1-JWT mediante Tuya Cloud OpenAPI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
